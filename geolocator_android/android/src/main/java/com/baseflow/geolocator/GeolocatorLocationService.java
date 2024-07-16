@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
@@ -144,8 +145,12 @@ public class GeolocatorLocationService extends Service {
               this.getApplicationContext(), CHANNEL_ID, ONGOING_NOTIFICATION_ID, options);
       backgroundNotification.updateChannel(options.getNotificationChannelName());
       Notification notification = backgroundNotification.build();
-      startForeground(ONGOING_NOTIFICATION_ID, notification);
-      isForeground = true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(ONGOING_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+        } else {
+            startForeground(ONGOING_NOTIFICATION_ID, notification);
+        }
+        isForeground = true;
     }
     obtainWakeLocks(options);
   }
